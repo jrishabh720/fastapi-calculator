@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FastAPI Calculator</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>FastAPI Calculator</h1>
+
+    <input
+        type="number"
+        id="a"
+        placeholder="Enter first number"
+    >
+
+    <input
+        type="number"
+        id="b"
+        placeholder="Enter second number"
+    >
+
+    <select id="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+        <option value="divide">Divide</option>
+    </select>
+
+    <button onclick="calculate()">
+        Calculate
+    </button>
+
+    <div id="result"></div>
+    <div id="error"></div>
+
+
+    <script>
+
+        async function calculate() {
+
+            const a = Number(document.getElementById("a").value);
+            const b = Number(document.getElementById("b").value);
+            const operation = document.getElementById("operation").value;
+
+            document.getElementById("result").innerText = "";
+            document.getElementById("error").innerText = "";
+
+            try {
+
+                const response = await fetch("/calculate", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        a: a,
+                        b: b,
+                        operation: operation
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById("error").innerText =
+                        data.error;
+                } else {
+                    document.getElementById("result").innerText =
+                        "Result: " + data.result;
+                }
+
+            } catch (error) {
+
+                document.getElementById("error").innerText =
+                    "Something went wrong.";
+
+            }
+        }
+
+    </script>
+
+</body>
+</html>
